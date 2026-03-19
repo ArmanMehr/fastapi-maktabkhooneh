@@ -1,14 +1,16 @@
 from fastapi import FastAPI, HTTPException, Path, Query, status
 from fastapi.responses import JSONResponse
+from fastapi_swagger import patch_fastapi
 
 expenses_db = [
     {"id": 0, "amount": 1000, "description": "expense-1"},
     {"id": 1, "amount": 1000, "description": "expense-2"},
     {"id": 2, "amount": 1000, "description": "expense-3"},
 ]
-last_id = 2
+last_id = len(expenses_db) - 1
 
-app = FastAPI()
+app = FastAPI(docs_url=None, swagger_ui_oauth2_redirect_url=None)
+patch_fastapi(app)
 
 
 @app.get("/expenses")

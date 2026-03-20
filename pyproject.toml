@@ -17,3 +17,7 @@ typeCheckingMode= "standard"
 venvPath = "."
 venv = ".venv"
 ignore= ["**/__pycache__"]
+
+
+[tool.pytest.ini_options]
+pythonpath = [".", "src"]

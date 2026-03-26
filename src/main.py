@@ -88,4 +88,3 @@ async def delete_expense(expense_id: int = Path(gt=0), db: Session = Depends(get
         )
     db.delete(expense)
     db.commit()
-    db.refresh(expense)

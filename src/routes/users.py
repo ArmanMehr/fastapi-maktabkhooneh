@@ -1,4 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    Request,
+    Response,
+    status,
+)
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
@@ -41,7 +48,9 @@ async def login_user(
     db: Session = Depends(get_db),
     lang=Depends(get_language),
 ):
-    user = db.query(User).filter(User.username == request.username).one_or_none()
+    user = (
+        db.query(User).filter(User.username == request.username).one_or_none()
+    )
     if not user or not verify_password(request.password, user.password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

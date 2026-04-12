@@ -13,7 +13,10 @@ from models import User
 JWT_ALGORITHM = "HS256"
 
 
-def generate_jwt_token(type: Literal["access", "refresh"], user_id: int) -> str:
+def generate_jwt_token(
+    type: Literal["access", "refresh"],
+    user_id: int,
+) -> str:
     now = datetime.now(timezone.utc)
     exp_seconds = (
         get_settings().JWT_ACCESS_TOKEN_DUR
@@ -28,10 +31,17 @@ def generate_jwt_token(type: Literal["access", "refresh"], user_id: int) -> str:
         "exp": int((now + timedelta(seconds=exp_seconds)).timestamp()),
     }
 
-    return encode(payload, key=get_settings().JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
+    return encode(
+        payload,
+        key=get_settings().JWT_SECRET_KEY,
+        algorithm=JWT_ALGORITHM,
+    )
 
 
-def decode_check_jwt_token(token: str, lang=Depends(get_language)) -> dict[str, Any]:
+def decode_check_jwt_token(
+    token: str,
+    lang=Depends(get_language),
+) -> dict[str, Any]:
     if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -92,7 +102,10 @@ def get_authenticated_user(
     if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=translate(lang=lang, msgid="failed_auth_invalid_access_token"),
+            detail=translate(
+                lang=lang,
+                msgid="failed_auth_invalid_access_token",
+            ),
         )
     try:
         decoded = decode_check_jwt_token(token)
@@ -100,21 +113,28 @@ def get_authenticated_user(
         if decoded.get("type") != "access":
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail=translate(lang=lang, msgid="failed_auth_invalid_access_token"),
+                detail=translate(
+                    lang=lang,
+                    msgid="failed_auth_invalid_access_token",
+                ),
             )
 
         user_id = decoded.get("user_id")
         if not user_id:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail=translate(lang=lang, msgid="failed_auth_not_found_userid"),
+                detail=translate(
+                    lang=lang, msgid="failed_auth_not_found_userid"
+                ),
             )
 
         user = db.query(User).filter(User.id == user_id).one_or_none()
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail=translate(lang=lang, msgid="failed_auth_user_not_found"),
+                detail=translate(
+                    lang=lang, msgid="failed_auth_user_not_found"
+                ),
             )
 
         return user

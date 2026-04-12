@@ -10,7 +10,9 @@ class User(Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    username: Mapped[str] = mapped_column(String(250), nullable=False, unique=True)
+    username: Mapped[str] = mapped_column(
+        String(250), nullable=False, unique=True
+    )
     password: Mapped[str] = mapped_column(default=True, nullable=False)
     is_active: Mapped[bool] = mapped_column(default=True)
 
@@ -18,7 +20,9 @@ class User(Base):
         DateTime(timezone=True), server_default=func.now()
     )
     updated_date: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), server_onupdate=func.now()
+        DateTime(timezone=True),
+        server_default=func.now(),
+        server_onupdate=func.now(),
     )
 
     expenses = relationship("Expense", back_populates="user", uselist=True)
@@ -37,7 +41,9 @@ class Expense(Base):
         DateTime(timezone=True), server_default=func.now()
     )
     updated_date: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), server_onupdate=func.now()
+        DateTime(timezone=True),
+        server_default=func.now(),
+        server_onupdate=func.now(),
     )
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))

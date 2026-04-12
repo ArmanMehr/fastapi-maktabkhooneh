@@ -1,0 +1,52 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "username_exists"
+msgstr "نام کاربری تکراری است."
+
+msgid "user_register_success"
+msgstr "کاربر با موفقیت ثبت نام شد."
+
+msgid "incorrect_uname_pass"
+msgstr "نام کاربری یا رمز عبور نادرست است."
+
+msgid "login_success"
+msgstr "با موفقیت وارد شدید."
+
+msgid "refresh_token_not_found"
+msgstr "توکن بازخوانی یافت نشد."
+
+msgid "failed_auth_unauthorized_user"
+msgstr "احراز هویت ناموفق بود، کاربر مجاز نیست."
+
+msgid "token_gen_success"
+msgstr "توکن با موفقیت تولید شد."
+
+msgid "expense_not_found_byid"
+msgstr "هزینه با شناسه درخواستی یافت نشد."
+
+msgid "failed_auth_missing_element_intoken"
+msgstr "احراز هویت ناموفق بود، عنصر مورد نیاز در توکن یافت نشد."
+
+msgid "failed_auth_token_exp"
+msgstr "احراز هویت ناموفق بود، توکن منقضی شده است."
+
+msgid "failed_auth_invalid_ref_token"
+msgstr "احراز هویت ناموفق بود، توکن  نامعتبر است."
+
+msgid "failed_auth_missing_access_token"
+msgstr "احراز هویت ناموفق بود، توکن دسترسی یافت نشد."
+
+msgid "failed_auth_invalid_access_token"
+msgstr "احراز هویت ناموفق بود، نوع توکن دسترسی نامعتبر است."
+
+msgid "failed_auth_not_found_userid"
+msgstr "احراز هویت ناموفق بود، شناسه کاربر در توکن یافت نشد."
+
+msgid "failed_auth_user_not_found"
+msgstr "کاربر یافت نشد یا غیرفعال است."
+
+msgid "failed_auth_missing_token"
+msgstr "احراز هویت ناموفق بود، توکن یافت نشد."

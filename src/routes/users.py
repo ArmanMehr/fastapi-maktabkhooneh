@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from auth import decode_verify_refresh_token, generate_jwt_token
 from configs import get_settings
 from database import get_db
+from locales.loader import get_language, translate
 from models import User
 from schemas import UserLoginSchema, UserRegisterSchema
 from utils import hash_password, verify_password
@@ -13,29 +14,38 @@ users_router = APIRouter(prefix="/users", tags=["users"])
 
 
 @users_router.post("/register", status_code=status.HTTP_201_CREATED)
-async def register_user(request: UserRegisterSchema, db: Session = Depends(get_db)):
+async def register_user(
+    request: UserRegisterSchema,
+    db: Session = Depends(get_db),
+    lang=Depends(get_language),
+):
     if db.query(User).filter(User.username == request.username).one_or_none():
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="User with this username already exists",
+            detail=translate(lang=lang, msgid="username_exists"),
         )
     password_hashed = hash_password(request.password)
     new_user = User(username=request.username, password=password_hashed)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-    return JSONResponse(content={"detail": "User registered successfully"})
+    return JSONResponse(
+        content={"detail": translate(lang=lang, msgid="user_register_success")}
+    )
 
 
 @users_router.post("/login", status_code=status.HTTP_200_OK)
 async def login_user(
-    request: UserLoginSchema, response: Response, db: Session = Depends(get_db)
+    request: UserLoginSchema,
+    response: Response,
+    db: Session = Depends(get_db),
+    lang=Depends(get_language),
 ):
     user = db.query(User).filter(User.username == request.username).one_or_none()
     if not user or not verify_password(request.password, user.password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
+            detail=translate(lang=lang, msgid="incorrect_uname_pass"),
         )
 
     refresh_token = generate_jwt_token(type="refresh", user_id=user.id)
@@ -59,20 +69,23 @@ async def login_user(
     )
 
     return JSONResponse(
-        content={"detail": "Logged in successfully."},
+        content={"detail": translate(lang=lang, msgid="login_success")},
         headers=response.headers,
     )
 
 
 @users_router.post("/refresh", status_code=status.HTTP_200_OK)
 async def user_refresh_token(
-    request: Request, response: Response, db: Session = Depends(get_db)
+    request: Request,
+    response: Response,
+    db: Session = Depends(get_db),
+    lang=Depends(get_language),
 ):
     refresh_token = request.cookies.get("refresh_token")
     if not refresh_token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Refresh token not found.",
+            detail=translate(lang=lang, msgid="refresh_token_not_found"),
         )
 
     user_id = decode_verify_refresh_token(refresh_token)
@@ -80,7 +93,7 @@ async def user_refresh_token(
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Authentication failed, unauthorized user.",
+            detail=translate(lang=lang, msgid="failed_auth_unauthorized_user"),
         )
 
     new_token = generate_jwt_token(type="access", user_id=user.id)
@@ -93,7 +106,8 @@ async def user_refresh_token(
         max_age=get_settings().JWT_ACCESS_TOKEN_DUR,
     )
     return JSONResponse(
-        content={"detail": "Token generated successfully"}, headers=response.headers
+        content={"detail": translate(lang=lang, msgid="token_gen_success")},
+        headers=response.headers,
     )
 
 

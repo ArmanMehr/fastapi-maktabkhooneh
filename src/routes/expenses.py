@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 
 from auth import get_authenticated_user
 from database import get_db
-from locales.loader import get_language, translate
+from exceptions import ExpenseNotFoundError
+from locales.loader import get_language
 from models import Expense, User
 from schemas import (
     ExpenseCreateSchema,
@@ -37,7 +38,7 @@ async def get_expense(
     expense_id: int = Path(gt=0),
     user: User = Depends(get_authenticated_user),
     db: Session = Depends(get_db),
-    lang=Depends(get_language),
+    _=Depends(get_language),
 ):
     query = (
         db.query(Expense)
@@ -46,10 +47,7 @@ async def get_expense(
     )
     if query:
         return query
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail=translate(lang=lang, msgid="expense_not_found_byid"),
-    )
+    raise ExpenseNotFoundError(expense_id)
 
 
 @expenses_router.post(
@@ -61,6 +59,7 @@ async def create_expense(
     request: ExpenseCreateSchema,
     user: User = Depends(get_authenticated_user),
     db: Session = Depends(get_db),
+    _=Depends(get_language),
 ):
     new_expense = Expense(**request.model_dump(), user_id=user.id)
     db.add(new_expense)
@@ -79,7 +78,7 @@ async def update_expense(
     request: ExpenseUpdateSchema,
     user: User = Depends(get_authenticated_user),
     db: Session = Depends(get_db),
-    lang=Depends(get_language),
+    _=Depends(get_language),
 ):
     expense = (
         db.query(Expense)
@@ -87,10 +86,8 @@ async def update_expense(
         .one_or_none()
     )
     if not expense:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=translate(lang=lang, msgid="expense_not_found_byid"),
-        )
+        raise ExpenseNotFoundError(expense_id)
+
     for field in request.model_dump().keys():
         setattr(expense, field, getattr(request, field))
     db.commit()
@@ -105,7 +102,7 @@ async def delete_expense(
     expense_id: int = Path(gt=0),
     user: User = Depends(get_authenticated_user),
     db: Session = Depends(get_db),
-    lang=Depends(get_language),
+    _=Depends(get_language),
 ):
     expense = (
         db.query(Expense)
@@ -113,9 +110,7 @@ async def delete_expense(
         .one_or_none()
     )
     if not expense:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=translate(lang=lang, msgid="expense_not_found_byid"),
-        )
+        raise ExpenseNotFoundError(expense_id)
+
     db.delete(expense)
     db.commit()

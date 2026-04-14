@@ -50,3 +50,7 @@ msgstr "کاربر یافت نشد یا غیرفعال است."
 
 msgid "failed_auth_missing_token"
 msgstr "احراز هویت ناموفق بود، توکن یافت نشد."
+
+msgid "expense_not_found_id"
+msgstr "هزینه با این آی دی یافت نشد:"
+

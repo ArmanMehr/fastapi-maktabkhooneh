@@ -50,3 +50,6 @@ msgstr "User not found or is inactive."
 
 msgid "failed_auth_missing_token"
 msgstr "Authentication failed, token missing"
+
+msgid "expense_not_found_id"
+msgstr "Expense with this ID not found:"

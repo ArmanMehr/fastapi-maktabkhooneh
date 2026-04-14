@@ -12,7 +12,7 @@ from main import app
 from models import Expense, User
 
 engine = create_engine(
-    "sqlite:///:memory",
+    "sqlite:///:memory:",
     connect_args={"check_same_thread": False},
     poolclass=StaticPool,
 )

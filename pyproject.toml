@@ -24,10 +24,6 @@ venvPath = "."
 venv = ".venv"
 ignore= ["**/__pycache__"]
 
-[[tool.uv.index]]
-url = "https://mirror2.chabokan.net/pypi/simple/"
-default = true
-
 
 [tool.pytest.ini_options]
 pythonpath = [".", "src"]

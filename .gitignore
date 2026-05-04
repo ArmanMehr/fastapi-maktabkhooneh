@@ -12,3 +12,7 @@ wheels/
 
 # File-specific ignores
 *.db
+
+
+# Vscode
+.vscode/

@@ -1,0 +1,15 @@
+.env.*
+.env
+.venv
+.wenv
+README.md
+__pycache__/
+.git/
+.gitignore
+dockerfiles/
+docker-compose.*
+docs/
+*.md
+tests/
+.dockerignore
+tests/

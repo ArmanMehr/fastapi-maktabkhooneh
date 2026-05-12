@@ -7,9 +7,9 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 
 from auth import generate_jwt_token
-from database import Base, get_db
+from database import get_db
 from main import app
-from models import Expense, User
+from models import Base, Expense, User
 
 engine = create_engine(
     "sqlite:///:memory:",

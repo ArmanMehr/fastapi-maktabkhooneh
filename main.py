@@ -1,3 +1,5 @@
+from logging import getLogger
+
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from fastapi_swagger import patch_fastapi
@@ -6,6 +8,8 @@ from exceptions import ExpenseNotFoundError
 from locales.loader import translate
 from routes.expenses import expenses_router
 from routes.users import users_router
+
+logger = getLogger(__name__)
 
 app = FastAPI(docs_url=None, swagger_ui_oauth2_redirect_url=None)
 patch_fastapi(app)

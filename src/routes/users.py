@@ -59,22 +59,23 @@ async def login_user(
 
     refresh_token = generate_jwt_token(type="refresh", user_id=user.id)
     access_token = generate_jwt_token(type="access", user_id=user.id)
+    settings = get_settings()
 
     response.set_cookie(
         key="access_token",
         value=access_token,
         httponly=True,
-        secure=True,
+        secure=settings.AUTH_COOKIE_SECURE,
         samesite="lax",
-        max_age=get_settings().JWT_ACCESS_TOKEN_DUR,
+        max_age=settings.JWT_ACCESS_TOKEN_DUR,
     )
     response.set_cookie(
         key="refresh_token",
         value=refresh_token,
         httponly=True,
-        secure=True,
+        secure=settings.AUTH_COOKIE_SECURE,
         samesite="lax",
-        max_age=get_settings().JWT_REFRESH_TOKEN_DUR,
+        max_age=settings.JWT_REFRESH_TOKEN_DUR,
     )
 
     return JSONResponse(
@@ -106,13 +107,14 @@ async def user_refresh_token(
         )
 
     new_token = generate_jwt_token(type="access", user_id=user.id)
+    settings = get_settings()
     response.set_cookie(
         key="access_token",
         value=new_token,
         httponly=True,
-        secure=True,
+        secure=settings.AUTH_COOKIE_SECURE,
         samesite="lax",
-        max_age=get_settings().JWT_ACCESS_TOKEN_DUR,
+        max_age=settings.JWT_ACCESS_TOKEN_DUR,
     )
     return JSONResponse(
         content={"detail": translate(lang=lang, msgid="token_gen_success")},

@@ -22,39 +22,37 @@ def test_delete_non_existing_expense_404(auth_client: TestClient):
 
 
 def test_get_existing_expense_200(auth_client: TestClient):
-    assert auth_client.get("/expenses/1").status_code == 200
+    expenses = auth_client.get("/expenses").json()
+    assert auth_client.get(f"/expenses/{expenses[0]['id']}").status_code == 200
 
 
 def test_create_and_delete_expense(auth_client: TestClient):
-
-    # Check getting 201 response as creating a new expense
     expense = {"amount": 1041, "description": "test"}
     post_response = auth_client.post("/expenses", json=expense)
     assert post_response.status_code == 201
+    expense_id = post_response.json()["id"]
 
-    # Check getting 200 response as getting created expense
-    # and check equality of values
-    get_response = auth_client.get("/expenses/11")
+    get_response = auth_client.get(f"/expenses/{expense_id}")
     assert get_response.status_code == 200
     assert get_response.json().get("amount") == 1041
     assert get_response.json().get("description") == "test"
 
-    # Check getting 204 response as deleting an expense
-    delete_response = auth_client.delete("/expenses/11")
+    delete_response = auth_client.delete(f"/expenses/{expense_id}")
     assert delete_response.status_code == 204
 
-    # Check getting 404 response as getting deleted expense
-    get_response = auth_client.get("/expenses/11")
+    get_response = auth_client.get(f"/expenses/{expense_id}")
     assert get_response.status_code == 404
     assert get_response.json().get("error")
 
 
 def test_update_expense(auth_client: TestClient):
+    expenses = auth_client.get("/expenses").json()
+    expense_id = expenses[0]["id"]
     expense = {"amount": 500, "description": "test"}
-    put_response = auth_client.put("/expenses/1", json=expense)
+    put_response = auth_client.put(f"/expenses/{expense_id}", json=expense)
     assert put_response.status_code == 201
 
-    get_response = auth_client.get("/expenses/1")
+    get_response = auth_client.get(f"/expenses/{expense_id}")
     assert get_response.status_code == 200
     assert get_response.json().get("amount") == 500
     assert get_response.json().get("description") == "test"

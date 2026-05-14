@@ -21,10 +21,21 @@ expenses_router = APIRouter(tags=["expenses"])
     response_model=list[ExpenseResponseSchema],
 )
 async def get_all_expenses(
-    user: User = Depends(get_authenticated_user), db: Session = Depends(get_db)
+    limit: int = 50,
+    offset: int = 0,
+    user: User = Depends(get_authenticated_user),
+    db: Session = Depends(get_db),
 ):
+
     try:
-        return db.query(Expense).filter(Expense.user_id == user.id).all()
+        return (
+            db.query(Expense)
+            .filter(Expense.user_id == user.id)
+            .order_by(Expense.id)
+            .offset(offset)
+            .limit(limit)
+            .all()
+        )
     except Exception:
         raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY)
 
@@ -40,13 +51,13 @@ async def get_expense(
     db: Session = Depends(get_db),
     _=Depends(get_language),
 ):
-    query = (
+    expense = (
         db.query(Expense)
         .filter(Expense.user_id == user.id, Expense.id == expense_id)
         .one_or_none()
     )
-    if query:
-        return query
+    if expense:
+        return expense
     raise ExpenseNotFoundError(expense_id)
 
 

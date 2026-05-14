@@ -1,5 +1,7 @@
 from pydantic import BaseModel, Field, StrictInt, field_validator
 
+from models import Expense
+
 
 class ExpenseBaseShema(BaseModel):
     amount: int = Field(..., gt=0)
@@ -8,6 +10,16 @@ class ExpenseBaseShema(BaseModel):
 
 class ExpenseResponseSchema(ExpenseBaseShema):
     id: StrictInt = Field(..., gt=0)
+
+    @classmethod
+    def validate_from_expense(
+        cls, expense: Expense
+    ) -> "ExpenseResponseSchema":
+        return cls(
+            id=expense.id,
+            amount=expense.amount,
+            description=expense.description or "",
+        )
 
 
 class ExpenseCreateSchema(ExpenseBaseShema):

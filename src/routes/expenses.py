@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Path, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 from sqlalchemy.orm import Session
 
 from auth import get_authenticated_user
@@ -21,8 +21,8 @@ expenses_router = APIRouter(tags=["expenses"])
     response_model=list[ExpenseResponseSchema],
 )
 async def get_all_expenses(
-    limit: int = 50,
-    offset: int = 0,
+    limit: int = Query(default=50, gt=0),
+    offset: int = Query(default=0, ge=0),
     user: User = Depends(get_authenticated_user),
     db: Session = Depends(get_db),
 ):

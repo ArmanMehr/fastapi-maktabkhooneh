@@ -1,9 +1,14 @@
+from contextlib import asynccontextmanager
 from logging import getLogger
 
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.redis import RedisBackend
 from fastapi_swagger import patch_fastapi
+from redis import asyncio as aioredis
 
+from configs import get_settings
 from exceptions import ExpenseNotFoundError
 from locales.loader import translate
 from routes.expenses import expenses_router
@@ -11,7 +16,21 @@ from routes.users import users_router
 
 logger = getLogger(__name__)
 
-app = FastAPI(docs_url=None, swagger_ui_oauth2_redirect_url=None)
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    redis = aioredis.from_url(get_settings().REDIS_URL)
+    FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
+    try:
+        yield
+    finally:
+        await redis.close()
+        FastAPICache.reset()
+
+
+app = FastAPI(
+    lifespan=lifespan, docs_url=None, swagger_ui_oauth2_redirect_url=None
+)
 patch_fastapi(app)
 
 app.include_router(users_router)

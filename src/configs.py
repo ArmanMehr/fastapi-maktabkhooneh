@@ -26,6 +26,8 @@ class Settings(BaseSettings):
     SUPPORTED_LANGUAGES: Sequence[str] = ["fa", "en"]
     DEFAULT_LANGUAGE: str = "en"
 
+    REDIS_URL: str = "redis://localhost:6379"
+
 
 @lru_cache
 def get_settings():

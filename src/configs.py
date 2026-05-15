@@ -26,7 +26,8 @@ class Settings(BaseSettings):
     SUPPORTED_LANGUAGES: Sequence[str] = ["fa", "en"]
     DEFAULT_LANGUAGE: str = "en"
 
-    REDIS_URL: str = "redis://localhost:6379"
+    # Redis
+    REDIS_URL: str = ""
 
 
 @lru_cache

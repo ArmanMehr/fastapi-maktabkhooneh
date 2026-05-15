@@ -1,0 +1,14 @@
+FROM docker.arvancloud.ir/python:3.14-slim
+
+
+WORKDIR /usr/app
+
+
+COPY requirements.txt .
+
+
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install \
+    -i https://mirror-pypi.runflare.com/simple \
+    -r requirements.txt
+

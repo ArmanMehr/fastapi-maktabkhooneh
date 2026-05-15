@@ -1,12 +1,21 @@
 [project]
 name = "fastapi-maktabkhooneh"
 version = "0.1.0"
-description = "Add your description here"
+description = "Maktabkhooneh fastapi tutorial practices."
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "alembic>=1.18.4",
+    "argon2-cffi>=25.1.0",
+    "fastapi-cache2[redis]>=0.2.2",
     "fastapi-swagger>=0.4.45",
     "fastapi[standard]>=0.135.1, <0.136.0",
+    "passlib>=1.7.4",
+    "psycopg2-binary>=2.9.12",
+    "pyjwt>=2.12.1",
+    "pytest>=9.0.3",
+    "python-multipart>=0.0.22",
+    "redis>=4.6.0",
     "sqlalchemy>=2.0.48",
     "uvicorn>=0.41.0",
 ]
@@ -17,3 +26,20 @@ typeCheckingMode= "standard"
 venvPath = "."
 venv = ".venv"
 ignore= ["**/__pycache__"]
+
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+
+[[tool.uv.index]]
+url = "https://mirror-pypi.runflare.com/simple"
+default = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 79
+
+[dependency-groups]
+dev = []

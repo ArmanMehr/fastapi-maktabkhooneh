@@ -1,0 +1,55 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "username_exists"
+msgstr "User with this username already exists"
+
+msgid "user_register_success"
+msgstr "User registered successfully"
+
+msgid "incorrect_uname_pass"
+msgstr "Incorrect username or password"
+
+msgid "login_success"
+msgstr "Logged in successfully."
+
+msgid "refresh_token_not_found"
+msgstr "Refresh token not found."
+
+msgid "failed_auth_unauthorized_user"
+msgstr "Authentication failed, unauthorized user."
+
+msgid "token_gen_success"
+msgstr "Token generated successfully"
+
+msgid "expense_not_found_byid"
+msgstr "Expense with requested id not found."
+
+msgid "failed_auth_missing_element_intoken"
+msgstr "Authentication failed, needed element missing in token"
+
+msgid "failed_auth_token_exp"
+msgstr "Authentication failed, token expired"
+
+msgid "failed_auth_invalid_ref_token"
+msgstr "Authentication failed, invalid refresh token"
+
+msgid "failed_auth_missing_access_token"
+msgstr "Authentication failed, access token not found."
+
+msgid "failed_auth_invalid_access_token"
+msgstr "Authentication failed, invalid access token type"
+
+msgid "failed_auth_not_found_userid"
+msgstr "Authentication failed, user ID not found in token."
+
+msgid "failed_auth_user_not_found"
+msgstr "User not found or is inactive."
+
+msgid "failed_auth_missing_token"
+msgstr "Authentication failed, token missing"
+
+msgid "expense_not_found_id"
+msgstr "Expense with this ID not found:"

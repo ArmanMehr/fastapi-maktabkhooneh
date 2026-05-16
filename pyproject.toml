@@ -32,7 +32,7 @@ ignore= ["**/__pycache__"]
 pythonpath = ["."]
 
 [[tool.uv.index]]
-url = "https://mirror-pypi.runflare.com/simple"
+url = "https://pypi.devneeds.ir/simple/"
 default = true
 
 [tool.setuptools.packages.find]

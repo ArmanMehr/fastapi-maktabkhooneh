@@ -29,7 +29,10 @@ async def lifespan(_: FastAPI):
 
 
 app = FastAPI(
-    lifespan=lifespan, docs_url=None, swagger_ui_oauth2_redirect_url=None
+    lifespan=lifespan,
+    docs_url=None,
+    swagger_ui_oauth2_redirect_url=None,
+    root_path="/api/v1",
 )
 patch_fastapi(app)
 

@@ -51,3 +51,10 @@ async def handle_expense_not_found(request: Request, exc):
     return JSONResponse(
         content=response_data, status_code=status.HTTP_404_NOT_FOUND
     )
+
+
+@app.get("/is_ready", status_code=status.HTTP_200_OK)
+async def readiness():
+    return JSONResponse(
+        content={"detail": "Service is ready!"}, status_code=status.HTTP_200_OK
+    )

@@ -34,7 +34,6 @@ services:
       ENVIRONMENT: production
       PYTHONPATH: /usr/app/src
       REDIS_URL: redis://redis:6379
-    command: fastapi run --host 0.0.0.0 --port 8000
     depends_on:
       db:
         condition: service_healthy

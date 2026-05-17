@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 from logging import getLogger
 
+import sentry_sdk
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from fastapi_cache import FastAPICache
@@ -15,6 +16,12 @@ from routes.expenses import expenses_router
 from routes.users import users_router
 
 logger = getLogger(__name__)
+
+
+try:
+    sentry_sdk.init(dsn=get_settings().SENTRY_DSN, traces_sample_rate=1.0)
+except Exception as e:
+    logger.warning(f"Unable to initilize sentry: {e}")
 
 
 @asynccontextmanager
@@ -56,8 +63,16 @@ async def handle_expense_not_found(request: Request, exc):
     )
 
 
-@app.get("/is-ready", status_code=status.HTTP_200_OK)
+@app.get("/is-ready", status_code=status.HTTP_200_OK, include_in_schema=False)
 async def readiness():
     return JSONResponse(
         content={"detail": "Service is ready!"}, status_code=status.HTTP_200_OK
     )
+
+
+@app.get(
+    "/sentry-debug", status_code=status.HTTP_200_OK, include_in_schema=False
+)
+async def trigger_error():
+    div_by_zero = 1 / 0
+    return div_by_zero

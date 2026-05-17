@@ -27,7 +27,10 @@ class Settings(BaseSettings):
     DEFAULT_LANGUAGE: str = "en"
 
     # Redis
-    REDIS_URL: str = ""
+    REDIS_URL: str = "redis://localhost:6379"
+
+    # Sentry
+    SENTRY_DSN: str = ""
 
 
 @lru_cache

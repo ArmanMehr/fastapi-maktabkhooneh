@@ -1,0 +1,25 @@
+image: python:3.14-slim
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+cache:
+  paths:
+    - .cache/pip
+
+before_script:
+  - python --version ; pip --version
+  - pip install virtualenv
+  - virtualenv venv
+  - source venv/bin/activate
+  - pip install pytest
+
+test:
+  script:
+    - pip install -e .
+    - pytest
+
+# deploy:
+#   stage: deploy
+#   script: echo "Define your deployment script!"
+#   environment: production

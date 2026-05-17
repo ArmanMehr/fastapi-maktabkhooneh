@@ -1,3 +1,4 @@
+# CI
 image: python:3.14-slim
 
 workflow:
@@ -23,7 +24,27 @@ test:
     - pip install -i https://pypi.devneeds.ir/simple -e .
     - pytest
 
-# deploy:
-#   stage: deploy
-#   script: echo "Define your deployment script!"
-#   environment: production
+
+# CD
+darkube_build_expenses-manager_my-personal-org-expenses-manager-mak_hamravesh-c13:
+  image: hamravesh.hamdocker.ir/public/darkube-cli:v1.1
+  interruptible: true
+  only:
+    refs:
+    - main
+  script:
+  - IMAGE_ADDRESS="registry.hamdocker.ir/my-personal-org/expenses-manager"
+  - 'darkube build --push -t $IMAGE_ADDRESS:$CI_COMMIT_SHORT_SHA -t $IMAGE_ADDRESS:$CI_COMMIT_REF_SLUG
+    --workdir . --file ./dockerfiles/Dockerfile --build-context . '
+  stage: build
+darkube_deploy_expenses-manager_my-personal-org-expenses-manager-mak_hamravesh-c13:
+  image: hamravesh.hamdocker.ir/public/darkube-cli:v1.1
+  interruptible: true
+  only:
+    refs:
+    - main
+  script:
+  - darkube deploy --token ${DEPLOY_TOKEN_EXPENSES_MANAGER_MY_PERSONAL_ORG_EXPENSES_MANAGER_MAK_HAMRAVESH_C13}
+    --app-id ${APP_ID_EXPENSES_MANAGER_MY_PERSONAL_ORG_EXPENSES_MANAGER_MAK_HAMRAVESH_C13}
+    --image-tag ${CI_COMMIT_SHORT_SHA} --job-id ${CI_JOB_ID}
+  stage: deploy

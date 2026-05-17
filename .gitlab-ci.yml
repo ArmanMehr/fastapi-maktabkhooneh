@@ -1,5 +1,9 @@
 image: python:3.14-slim
 
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
 
@@ -9,7 +13,7 @@ cache:
 
 before_script:
   - python --version ; pip --version
-  - pip install virtualenv
+  - pip install -i https://pypi.devneeds.ir/simple virtualenv
   - virtualenv venv
   - source venv/bin/activate
   - pip install -i https://pypi.devneeds.ir/simple pytest

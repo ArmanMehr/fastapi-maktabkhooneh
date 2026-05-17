@@ -1,32 +1,30 @@
-# CI
-image: python:3.14-slim
-
 workflow:
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
 
-variables:
-  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
-
-cache:
-  paths:
-    - .cache/pip
-
-before_script:
-  - python --version ; pip --version
-  - pip install -i https://pypi.devneeds.ir/simple virtualenv
-  - virtualenv venv
-  - source venv/bin/activate
-  - pip install -i https://pypi.devneeds.ir/simple pytest
-
 test:
+  image: python:3.14-slim
+
+  variables:
+    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+  cache:
+    paths:
+      - .cache/pip
+
+  before_script:
+    - python --version ; pip --version
+    - pip install -i https://pypi.devneeds.ir/simple virtualenv
+    - virtualenv venv
+    - source venv/bin/activate
+    - pip install -i https://pypi.devneeds.ir/simple pytest
+
   script:
     - pip install -i https://pypi.devneeds.ir/simple -e .
     - pytest
 
 
-# CD
-darkube_build_expenses-manager_my-personal-org-expenses-manager-mak_hamravesh-c13:
+darkube_build:
   image: hamravesh.hamdocker.ir/public/darkube-cli:v1.1
   interruptible: true
   only:
@@ -37,7 +35,7 @@ darkube_build_expenses-manager_my-personal-org-expenses-manager-mak_hamravesh-c1
   - 'darkube build --push -t $IMAGE_ADDRESS:$CI_COMMIT_SHORT_SHA -t $IMAGE_ADDRESS:$CI_COMMIT_REF_SLUG
     --workdir . --file ./dockerfiles/Dockerfile --build-context . '
   stage: build
-darkube_deploy_expenses-manager_my-personal-org-expenses-manager-mak_hamravesh-c13:
+darkube_deploy:
   image: hamravesh.hamdocker.ir/public/darkube-cli:v1.1
   interruptible: true
   only:

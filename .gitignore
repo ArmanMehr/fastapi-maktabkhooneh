@@ -8,3 +8,9 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Vscode
+.vscode/
+.env
+*.db
+uv.lock

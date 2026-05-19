@@ -1,8 +1,9 @@
 from datetime import datetime, timedelta, timezone
+from logging import getLogger
 from typing import Any, Literal, Optional
 
 from fastapi import Depends, HTTPException, Request, status
-from jwt import decode, encode
+from jwt import ExpiredSignatureError, PyJWTError, decode, encode
 from sqlalchemy.orm import Session
 
 from configs import get_settings
@@ -10,6 +11,8 @@ from database import get_db
 from models import User
 
 JWT_ALGORITHM = "HS256"
+
+logger = getLogger(__name__)
 
 
 def generate_jwt_token(type: Literal["access", "refresh"], user_id: int) -> str:
@@ -30,11 +33,12 @@ def generate_jwt_token(type: Literal["access", "refresh"], user_id: int) -> str:
     return encode(payload, key=get_settings().JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
 
 
-def decode_check_jwt_token(token: str) -> dict[str, Any]:
+def decode_check_jwt_token(token: str, expected_type: str = "access") -> dict[str, Any]:
     if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Authentication failed, token missing",
+            detail="Authentication required",
+            headers={"WWW-Authenticate": "Bearer"},
         )
 
     try:
@@ -42,6 +46,7 @@ def decode_check_jwt_token(token: str) -> dict[str, Any]:
             token,
             key=get_settings().JWT_SECRET_KEY,
             algorithms=[JWT_ALGORITHM],
+            options={"verify_exp": True},
         )
 
         required = ["type", "user_id", "exp"]
@@ -49,23 +54,38 @@ def decode_check_jwt_token(token: str) -> dict[str, Any]:
             if item not in decoded:
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail=f"Authentication failed, `{item}` missing in token",
+                    detail="Invalid token structure",
                 )
 
-        if datetime.now(timezone.utc) > datetime.fromtimestamp(
-            decoded["exp"], tz=timezone.utc
-        ):
+        if decoded.get("type") != expected_type:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Authentication failed, token expired",
+                detail="Invalid token type",
             )
 
         return decoded
 
-    except Exception as e:
+    except ExpiredSignatureError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Authentication failed, {e}",
+            detail="token_expired",
+            headers={"X-Token-Expired": "true"},
+        )
+
+    except PyJWTError:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid token",
+        )
+
+    except HTTPException:
+        raise
+
+    except Exception as e:
+        logger.error(f"Unexpected error in token validation: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal error",
         )
 
 
@@ -90,37 +110,24 @@ def get_authenticated_user(
     if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Authentication failed, access token not found.",
+            detail="Authentication required",
+            headers={"WWW-Authenticate": "Bearer"},
         )
-    try:
-        decoded = decode_check_jwt_token(token)
 
-        if decoded.get("type") != "access":
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Authentication failed, invalid access token type",
-            )
+    decoded = decode_check_jwt_token(token, expected_type="access")
 
-        user_id = decoded.get("user_id")
-        if not user_id:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Authentication failed, user ID not found in token.",
-            )
-
-        user = db.query(User).filter(User.id == user_id).one_or_none()
-        if not user:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="User not found or is inactive.",
-            )
-
-        return user
-
-    except HTTPException as e:
-        raise e
-    except Exception as e:
+    user_id = decoded.get("user_id")
+    if not user_id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Authentication failed. An unexpected error occurred: {e}",
+            detail="Invalid token structure",
         )
+
+    user = db.query(User).filter(User.id == user_id).one_or_none()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found",
+        )
+
+    return user

@@ -7,7 +7,7 @@ load_dotenv()
 
 
 class Settings(BaseSettings):
-    DATABASE_URL: str = ""
+    DATABASE_URL: str = "sqlite:///./expenses.db"
     JWT_SECRET_KEY: str = "just-a-long-secret-key-for-json-web-token-123123"
     JWT_ACCESS_TOKEN_DUR: int = 5 * 60
     JWT_REFRESH_TOKEN_DUR: int = 7 * 3600

@@ -11,7 +11,7 @@ COPY requirements.txt .
 
 RUN pip install \
 	--no-cache-dir \
-	-i https://mirror-pypi.runflare.com/simple \
+	-i https://pypi.devneeds.ir/simple \
 	-r requirements.txt
 
 

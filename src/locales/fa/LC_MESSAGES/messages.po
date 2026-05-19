@@ -27,26 +27,26 @@ msgstr "توکن با موفقیت تولید شد."
 msgid "expense_not_found_byid"
 msgstr "هزینه با شناسه درخواستی یافت نشد."
 
-msgid "failed_auth_missing_element_intoken"
-msgstr "احراز هویت ناموفق بود، عنصر مورد نیاز در توکن یافت نشد."
+msgid "authentication_required"
+msgstr "احراز هویت الزامی است"
 
-msgid "failed_auth_token_exp"
-msgstr "احراز هویت ناموفق بود، توکن منقضی شده است."
+msgid "invalid_token_structure"
+msgstr "ساختار توکن نامعتبر است"
 
-msgid "failed_auth_invalid_ref_token"
-msgstr "احراز هویت ناموفق بود، توکن  نامعتبر است."
+msgid "invalid_token_type"
+msgstr "نوع توکن نامعتبر است"
 
-msgid "failed_auth_missing_access_token"
-msgstr "احراز هویت ناموفق بود، توکن دسترسی یافت نشد."
+msgid "token_expired"
+msgstr "توکن منقضی شده است"
 
-msgid "failed_auth_invalid_access_token"
-msgstr "احراز هویت ناموفق بود، نوع توکن دسترسی نامعتبر است."
+msgid "invalid_token"
+msgstr "توکن نامعتبر است"
 
-msgid "failed_auth_not_found_userid"
-msgstr "احراز هویت ناموفق بود، شناسه کاربر در توکن یافت نشد."
+msgid "internal_error"
+msgstr "خطای داخلی سرور"
 
-msgid "failed_auth_user_not_found"
-msgstr "کاربر یافت نشد یا غیرفعال است."
+msgid "invalid_refresh_token"
+msgstr "توکن بازخوانی نامعتبر است"
 
-msgid "failed_auth_missing_token"
-msgstr "احراز هویت ناموفق بود، توکن یافت نشد."
+msgid "user_not_found"
+msgstr "کاربر یافت نشد یا غیرفعال است"

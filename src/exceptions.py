@@ -1,4 +1,4 @@
 class ExpenseNotFoundError(Exception):
-    def __init__(self, expense_id: int):
+    def __init__(self, expense_id: int, status_code=404):
         self.expense_id = expense_id
         super().__init__(f"Expense with ID {expense_id} not found")

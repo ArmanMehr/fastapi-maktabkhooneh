@@ -48,7 +48,11 @@ async def get_expense(
         return query
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
+<<<<<<< HEAD
         detail=translate(lang=lang, msgid="expense_not_found_byid"),
+=======
+        detail="expense_not_found_byid",
+>>>>>>> practice/5-expenses-manager-multiple-language
     )
 
 
@@ -89,7 +93,11 @@ async def update_expense(
     if not expense:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
+<<<<<<< HEAD
             detail=translate(lang=lang, msgid="expense_not_found_byid"),
+=======
+            detail="expense_not_found_byid",
+>>>>>>> practice/5-expenses-manager-multiple-language
         )
     for field in request.model_dump().keys():
         setattr(expense, field, getattr(request, field))
@@ -115,7 +123,11 @@ async def delete_expense(
     if not expense:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
+<<<<<<< HEAD
             detail=translate(lang=lang, msgid="expense_not_found_byid"),
+=======
+            detail="expense_not_found_byid",
+>>>>>>> practice/5-expenses-manager-multiple-language
         )
     db.delete(expense)
     db.commit()

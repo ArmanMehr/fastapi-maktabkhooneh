@@ -27,6 +27,7 @@ msgstr "Token generated successfully"
 msgid "expense_not_found_byid"
 msgstr "Expense with requested id not found."
 
+<<<<<<< HEAD
 msgid "failed_auth_missing_element_intoken"
 msgstr "Authentication failed, needed element missing in token"
 
@@ -50,3 +51,28 @@ msgstr "User not found or is inactive."
 
 msgid "failed_auth_missing_token"
 msgstr "Authentication failed, token missing"
+=======
+msgid "authentication_required"
+msgstr "Authentication required"
+
+msgid "invalid_token_structure"
+msgstr "Invalid token structure"
+
+msgid "invalid_token_type"
+msgstr "Invalid token type"
+
+msgid "token_expired"
+msgstr "Token expired"
+
+msgid "invalid_token"
+msgstr "Invalid token"
+
+msgid "internal_error"
+msgstr "Internal server error"
+
+msgid "invalid_refresh_token"
+msgstr "Invalid refresh token"
+
+msgid "user_not_found"
+msgstr "User not found or is inactive"
+>>>>>>> practice/5-expenses-manager-multiple-language

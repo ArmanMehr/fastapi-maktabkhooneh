@@ -27,6 +27,7 @@ msgstr "توکن با موفقیت تولید شد."
 msgid "expense_not_found_byid"
 msgstr "هزینه با شناسه درخواستی یافت نشد."
 
+<<<<<<< HEAD
 msgid "failed_auth_missing_element_intoken"
 msgstr "احراز هویت ناموفق بود، عنصر مورد نیاز در توکن یافت نشد."
 
@@ -50,3 +51,28 @@ msgstr "کاربر یافت نشد یا غیرفعال است."
 
 msgid "failed_auth_missing_token"
 msgstr "احراز هویت ناموفق بود، توکن یافت نشد."
+=======
+msgid "authentication_required"
+msgstr "احراز هویت الزامی است"
+
+msgid "invalid_token_structure"
+msgstr "ساختار توکن نامعتبر است"
+
+msgid "invalid_token_type"
+msgstr "نوع توکن نامعتبر است"
+
+msgid "token_expired"
+msgstr "توکن منقضی شده است"
+
+msgid "invalid_token"
+msgstr "توکن نامعتبر است"
+
+msgid "internal_error"
+msgstr "خطای داخلی سرور"
+
+msgid "invalid_refresh_token"
+msgstr "توکن بازخوانی نامعتبر است"
+
+msgid "user_not_found"
+msgstr "کاربر یافت نشد یا غیرفعال است"
+>>>>>>> practice/5-expenses-manager-multiple-language

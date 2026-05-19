@@ -9,10 +9,8 @@ wheels/
 # Virtual environments
 .venv
 
-
-# File-specific ignores
-*.db
-
-
 # Vscode
 .vscode/
+.env
+*.db
+uv.lock

@@ -98,7 +98,6 @@ async def update_expense(
     )
     if not expense:
         raise ExpenseNotFoundError(expense_id)
-
     for field in request.model_dump().keys():
         setattr(expense, field, getattr(request, field))
     db.commit()
@@ -122,6 +121,5 @@ async def delete_expense(
     )
     if not expense:
         raise ExpenseNotFoundError(expense_id)
-
     db.delete(expense)
     db.commit()

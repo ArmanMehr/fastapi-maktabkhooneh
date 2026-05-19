@@ -1,8 +1,9 @@
 from datetime import datetime, timedelta, timezone
+from logging import getLogger
 from typing import Any, Literal, Optional
 
 from fastapi import Depends, HTTPException, Request, status
-from jwt import decode, encode
+from jwt import ExpiredSignatureError, PyJWTError, decode, encode
 from sqlalchemy.orm import Session
 
 from configs import get_settings
@@ -11,6 +12,8 @@ from locales.loader import get_language, translate
 from models import User
 
 JWT_ALGORITHM = "HS256"
+
+logger = getLogger(__name__)
 
 
 def generate_jwt_token(
@@ -39,13 +42,13 @@ def generate_jwt_token(
 
 
 def decode_check_jwt_token(
-    token: str,
-    lang=Depends(get_language),
+    token: str, expected_type: str = "access", lang: str = "en"
 ) -> dict[str, Any]:
     if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=translate(lang=lang, msgid="failed_auth_missing_token"),
+            detail=translate(lang, "authentication_required"),
+            headers={"WWW-Authenticate": "Bearer"},
         )
 
     try:
@@ -53,6 +56,7 @@ def decode_check_jwt_token(
             token,
             key=get_settings().JWT_SECRET_KEY,
             algorithms=[JWT_ALGORITHM],
+            options={"verify_exp": True},
         )
 
         required = ["type", "user_id", "exp"]
@@ -60,89 +64,81 @@ def decode_check_jwt_token(
             if item not in decoded:
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail=translate(
-                        lang=lang, msgid="failed_auth_missing_element_intoken"
-                    ),
+                    detail=translate(lang, "invalid_token_structure"),
                 )
 
-        if datetime.now(timezone.utc) > datetime.fromtimestamp(
-            decoded["exp"], tz=timezone.utc
-        ):
+        if decoded.get("type") != expected_type:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail=translate(lang=lang, msgid="failed_auth_token_exp"),
+                detail=translate(lang, "invalid_token_type"),
             )
 
         return decoded
 
-    except Exception as e:
+    except ExpiredSignatureError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Authentication failed, {e}",
+            detail=translate(lang, "token_expired"),
+            headers={"X-Token-Expired": "true"},
+        )
+
+    except PyJWTError:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=translate(lang, "invalid_token"),
+        )
+
+    except HTTPException:
+        raise
+
+    except Exception as e:
+        logger.error(f"Unexpected error in token validation: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=translate(lang, "internal_error"),
         )
 
 
-def decode_verify_refresh_token(token: str, lang=Depends(get_language)) -> int:
-    decoded = decode_check_jwt_token(token)
+def decode_verify_refresh_token(token: str, lang: str = "en") -> int:
+    decoded = decode_check_jwt_token(token, expected_type="refresh", lang=lang)
 
-    if decoded["type"] != "refresh":
+    if decoded.get("type") != "refresh":
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=translate(lang=lang, msgid="failed_auth_invalid_ref_token"),
+            detail=translate(lang, "invalid_refresh_token"),
         )
 
     return decoded["user_id"]
 
 
 def get_authenticated_user(
-    request: Request, db: Session = Depends(get_db), lang=Depends(get_language)
+    request: Request,
+    db: Session = Depends(get_db),
+    lang: str = Depends(get_language),
 ) -> Optional[User]:
     token = request.cookies.get("access_token")
 
     if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=translate(
-                lang=lang,
-                msgid="failed_auth_invalid_access_token",
-            ),
+            detail=translate(lang, "authentication_required"),
+            headers={"WWW-Authenticate": "Bearer"},
         )
-    try:
-        decoded = decode_check_jwt_token(token)
 
-        if decoded.get("type") != "access":
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail=translate(
-                    lang=lang,
-                    msgid="failed_auth_invalid_access_token",
-                ),
-            )
+    decoded = decode_check_jwt_token(token, expected_type="access", lang=lang)
 
-        user_id = decoded.get("user_id")
-        if not user_id:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail=translate(
-                    lang=lang, msgid="failed_auth_not_found_userid"
-                ),
-            )
-
-        user = db.query(User).filter(User.id == user_id).one_or_none()
-        if not user:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail=translate(
-                    lang=lang, msgid="failed_auth_user_not_found"
-                ),
-            )
-
-        return user
-
-    except HTTPException as e:
-        raise e
-    except Exception as e:
+    user_id = decoded.get("user_id")
+    if not user_id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Authentication failed. An unexpected error occurred: {e}",
+            detail=translate(lang, "invalid_token_structure"),
         )
+
+    user = db.query(User).filter(User.id == user_id).one_or_none()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=translate(lang, "user_not_found"),
+        )
+
+    return user

@@ -42,22 +42,13 @@ def generate_jwt_token(
 
 
 def decode_check_jwt_token(
-<<<<<<< HEAD
-    token: str,
-    lang=Depends(get_language),
-=======
     token: str, expected_type: str = "access", lang: str = "en"
->>>>>>> practice/5-expenses-manager-multiple-language
 ) -> dict[str, Any]:
     if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-<<<<<<< HEAD
-            detail=translate(lang=lang, msgid="failed_auth_missing_token"),
-=======
             detail=translate(lang, "authentication_required"),
             headers={"WWW-Authenticate": "Bearer"},
->>>>>>> practice/5-expenses-manager-multiple-language
         )
 
     try:
@@ -73,23 +64,13 @@ def decode_check_jwt_token(
             if item not in decoded:
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
-<<<<<<< HEAD
-                    detail=translate(
-                        lang=lang, msgid="failed_auth_missing_element_intoken"
-                    ),
-=======
                     detail=translate(lang, "invalid_token_structure"),
->>>>>>> practice/5-expenses-manager-multiple-language
                 )
 
         if decoded.get("type") != expected_type:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-<<<<<<< HEAD
-                detail=translate(lang=lang, msgid="failed_auth_token_exp"),
-=======
                 detail=translate(lang, "invalid_token_type"),
->>>>>>> practice/5-expenses-manager-multiple-language
             )
 
         return decoded
@@ -118,91 +99,36 @@ def decode_check_jwt_token(
         )
 
 
-<<<<<<< HEAD
-def decode_verify_refresh_token(token: str, lang=Depends(get_language)) -> int:
-    decoded = decode_check_jwt_token(token)
-=======
 def decode_verify_refresh_token(token: str, lang: str = "en") -> int:
     decoded = decode_check_jwt_token(token, expected_type="refresh", lang=lang)
->>>>>>> practice/5-expenses-manager-multiple-language
 
     if decoded.get("type") != "refresh":
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-<<<<<<< HEAD
-            detail=translate(lang=lang, msgid="failed_auth_invalid_ref_token"),
-=======
             detail=translate(lang, "invalid_refresh_token"),
->>>>>>> practice/5-expenses-manager-multiple-language
         )
 
     return decoded["user_id"]
 
 
 def get_authenticated_user(
-<<<<<<< HEAD
-    request: Request, db: Session = Depends(get_db), lang=Depends(get_language)
-=======
     request: Request,
     db: Session = Depends(get_db),
     lang: str = Depends(get_language),
->>>>>>> practice/5-expenses-manager-multiple-language
 ) -> Optional[User]:
     token = request.cookies.get("access_token")
 
     if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-<<<<<<< HEAD
-            detail=translate(
-                lang=lang,
-                msgid="failed_auth_invalid_access_token",
-            ),
-=======
             detail=translate(lang, "authentication_required"),
             headers={"WWW-Authenticate": "Bearer"},
->>>>>>> practice/5-expenses-manager-multiple-language
         )
 
-<<<<<<< HEAD
-        if decoded.get("type") != "access":
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail=translate(
-                    lang=lang,
-                    msgid="failed_auth_invalid_access_token",
-                ),
-            )
-
-        user_id = decoded.get("user_id")
-        if not user_id:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail=translate(
-                    lang=lang, msgid="failed_auth_not_found_userid"
-                ),
-            )
-
-        user = db.query(User).filter(User.id == user_id).one_or_none()
-        if not user:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail=translate(
-                    lang=lang, msgid="failed_auth_user_not_found"
-                ),
-            )
-
-        return user
-
-    except HTTPException as e:
-        raise e
-    except Exception as e:
-=======
     decoded = decode_check_jwt_token(token, expected_type="access", lang=lang)
 
     user_id = decoded.get("user_id")
     if not user_id:
->>>>>>> practice/5-expenses-manager-multiple-language
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=translate(lang, "invalid_token_structure"),

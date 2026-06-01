@@ -305,7 +305,7 @@ Language is determined by the `Accept-Language` header in requests.
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. See the [LICENSE](https://github.com/ArmanMehr/fastapi-maktabkhooneh/blob/main/LICENCE) file for details.
 
 ## Acknowledgments
 
